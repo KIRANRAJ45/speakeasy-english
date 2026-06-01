@@ -1,0 +1,132 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                  String                @id @default(uuid())
+  email               String                @unique
+  passwordHash        String
+  role                String                @default("USER") // USER, ADMIN
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  profile             Profile?
+  conversations       ConversationHistory[]
+  progress            UserProgress[]
+  vocabularyLearned   VocabularyLearned[]
+  dailyMinutes        DailyMinutes[]
+  badges              UserBadge[]
+}
+
+model Profile {
+  id             String    @id @default(uuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  nativeLanguage String    @default("Tamil")
+  level          String    @default("Beginner") // Beginner, Intermediate, Advanced
+  xp             Int       @default(0)
+  streak         Int       @default(0)
+  lastActive     DateTime?
+  avatarUrl      String?
+  updatedAt      DateTime  @updatedAt
+}
+
+model Lesson {
+  id           String         @id @default(uuid())
+  title        String
+  titleTamil   String
+  category     String         // Grammar, Conversation, Vocabulary
+  difficulty   String         // Beginner, Intermediate, Advanced
+  content      String         @db.Text
+  contentTamil String         @db.Text
+  xpReward     Int            @default(10)
+  createdAt    DateTime       @default(now())
+  progress     UserProgress[]
+}
+
+model Vocabulary {
+  id                   String              @id @default(uuid())
+  word                 String              @unique
+  wordTamil            String
+  partOfSpeech         String
+  pronunciation        String
+  definition           String              @db.Text
+  definitionTamil      String              @db.Text
+  exampleSentence      String              @db.Text
+  exampleSentenceTamil String              @db.Text
+  synonyms             String
+  antonyms             String
+  createdAt            DateTime            @default(now())
+  learned              VocabularyLearned[]
+}
+
+model ConversationHistory {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role             String   // Teacher, Friend, Interviewer, Customer, etc.
+  channel          String   // Text, Voice
+  userText         String   @db.Text
+  botText          String   @db.Text
+  botAudioUrl      String?  @db.Text
+  corrections      String?  @db.Text // JSON string or text explanation of corrected grammar
+  explanationTamil String?  @db.Text // Grammatical feedback explained in Tamil
+  createdAt        DateTime @default(now())
+}
+
+model UserProgress {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+
+  @@unique([userId, lessonId])
+}
+
+model VocabularyLearned {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vocabularyId String
+  vocabulary   Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+  learnedAt    DateTime   @default(now())
+
+  @@unique([userId, vocabularyId])
+}
+
+model DailyMinutes {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      String   // YYYY-MM-DD
+  minutes   Int      @default(0)
+
+  @@unique([userId, date])
+}
+
+model Badge {
+  id          String      @id @default(uuid())
+  title       String      @unique
+  description String
+  badgeIcon   String
+  xpThreshold Int         @default(0)
+  users       UserBadge[]
+}
+
+model UserBadge {
+  id       String   @id @default(uuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId  String
+  badge    Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  earnedAt DateTime @default(now())
+
+  @@unique([userId, badgeId])
+}

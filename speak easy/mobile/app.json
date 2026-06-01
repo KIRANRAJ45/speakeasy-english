@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "SpeakEasy English",
+    "slug": "speakeasy-english",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E0F2FE"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.speakeasy.english",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "SpeakEasy English needs microphone access to analyze and correct your spoken pronunciation."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#E0F2FE"
+      },
+      "package": "com.speakeasy.english",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
