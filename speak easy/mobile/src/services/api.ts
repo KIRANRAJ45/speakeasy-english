@@ -3,8 +3,11 @@ import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
 // Auto-detect environments: 10.0.2.2 for Android Emulator, localhost for iOS simulator
-export const API_BASE_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5000/api' : 'http://localhost:5000/api';
-export const STATIC_BASE_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5000' : 'http://localhost:5000';
+export const API_BASE_URL =
+  'https://speakeasy-api-72ol.onrender.com/api';
+
+export const STATIC_BASE_URL =
+  'https://speakeasy-api-72ol.onrender.com';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
